@@ -5,13 +5,18 @@ use paperclip::actix:: {OpenApiExt, Apiv2Schema, api_v2_operation};
 use serde::{Serialize, Deserialize};
 
 
-
-async fn health_check() -> HttpResponse { HttpResponse::Ok().finish() }
-
-async fn subscribe() -> HttpResponse {
-    HttpResponse::Ok().finish()
+#[derive(serde::Deserialize)] struct FormData {
+    email: String,
+    name: String
 }
 
+async fn health_check() -> HttpResponse { 
+    HttpResponse::Ok().finish() 
+}
+
+async fn subscribe(_form: web::Form<FormData>) -> HttpResponse { 
+    HttpResponse::Ok().finish() 
+}
 
 pub fn run(listener: TcpListener) -> Result<Server, std::io::Error> { let server = HttpServer::new(|| {
     App::new()
@@ -20,5 +25,6 @@ pub fn run(listener: TcpListener) -> Result<Server, std::io::Error> { let server
 })
     .listen(listener)?
     .run();
-    Ok(server) }
+    Ok(server) 
+}
 
