@@ -21,7 +21,7 @@ jobs:
       - name: Deploy to EC2
         run: |
           ssh -o "StrictHostKeyChecking=no" ubuntu@${{ secrets.HOST }} << 'EOF'
-            cd /path/to/your/app
+            cd ~/Modulite_backend
             git pull
             docker-compose down
             docker-compose up -d --build
