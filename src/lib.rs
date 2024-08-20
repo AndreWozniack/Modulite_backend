@@ -36,7 +36,7 @@ async fn check_database_connection() -> bool {
 }
 async fn get_message() -> impl Responder {
     HttpResponse::Ok().json(MessageResponse {
-        message: "Bem vindo ao servidor do Modu.lite em Rust!".to_string(),
+        message: "Welcome to Rust Server of Modu.lite App!".to_string(),
     })
 }
 
