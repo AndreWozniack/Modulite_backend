@@ -45,6 +45,6 @@ export DATABASE_URL
 sqlx database create
 
 export DATABASE_URL=postgres://${DB_USER}:${DB_PASSWORD}@${DB_HOST}:${DB_PORT}/${DB_NAME}
-sqlx migrate add 
+sqlx migrate add create_users_table
 
 

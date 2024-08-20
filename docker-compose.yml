@@ -8,18 +8,20 @@
 # database or a cache. For examples, see the Awesome Compose repository:
 # https://github.com/docker/awesome-compose
 services:
-  server:
+  modulite-server:
     build:
       context: .
       target: final
+    image: modulite-server:latest
+    container_name: modulite-server
     ports:
       - 8080:8080
     depends_on:
-      - db
+      - modulite-db
 
-  db:
-    container_name: postgres
-    image: postgres
+  modulite-db:
+    container_name: modulite-db
+    image: postgres:16.4
     environment:
         POSTGRES_USER: postgres
         POSTGRES_PASSWORD: postgres
@@ -27,10 +29,10 @@ services:
     ports:
       - 5432:5432
     volumes:
-      - pgdata:/var/lib/postgresql@16.4/data
+      - modulite_pgdata:/var/lib/postgresql/data
 
 volumes:
-  pgdata: {}
+  modulite_pgdata: {}
 
 
 
