@@ -23,6 +23,7 @@ jobs:
           ssh -o "StrictHostKeyChecking=no" ubuntu@${{ secrets.HOST }} << 'EOF'
             cd ~/Modulite_backend
             git pull
-            docker compose down -v
+            docker compose down
             docker compose up -d --build
+
           EOF
