@@ -3,8 +3,9 @@ use Modulite::run;
 
 #[tokio::main]
 async fn main() -> Result<(), std::io::Error> {
-    let listener = TcpListener::bind("127.0.0.1:0")
-        .expect("Failed to bind random port");
+    let listener = TcpListener::bind("0.0.0.0:8080")
+        .expect("Failed to bind port 8080");
     run(listener)?.await
 }
+
 

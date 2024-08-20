@@ -1,28 +1,37 @@
-version: '3.9'
+# Comments are provided throughout this file to help you get started.
+# If you need more help, visit the Docker Compose reference guide at
+# https://docs.docker.com/go/compose-spec-reference/
 
+# Here the instructions define your application as a service called "server".
+# This service is built from the Dockerfile in the current directory.
+# You can add other services your application may depend on here, such as a
+# database or a cache. For examples, see the Awesome Compose repository:
+# https://github.com/docker/awesome-compose
 services:
-  rustapp:
-    container_name: Modulite
+  server:
     build:
       context: .
-      dockerfile: Dockerfile
-      args:
-        DATABASE_URL: postgres://postgres:postgres@db:5432/postgres
+      target: final
     ports:
-      - '8080:8080'
+      - 8080:8080
     depends_on:
       - db
+
   db:
-    container_name: db
-    image: postgres:12
+    container_name: postgres
+    image: postgres
     environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: postgres
+        POSTGRES_USER: postgres
+        POSTGRES_PASSWORD: postgres
+        POSTGRES_DB: postgres
     ports:
-      - '5432:5432'
+      - 5432:5432
     volumes:
-      - pgdata:/var/lib/postgresql/data
+      - pgdata:/var/lib/postgresql@16.4/data
 
 volumes:
   pgdata: {}
+
+
+
+
