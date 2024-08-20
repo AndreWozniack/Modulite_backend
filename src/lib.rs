@@ -43,6 +43,7 @@ async fn get_message() -> impl Responder {
 pub fn run(listener: TcpListener) -> Result<Server, std::io::Error> {
     let server = HttpServer::new(|| {
         App::new()
+            .route("/", web::get().to(get_message))
             .route("/health_check", web::get().to(health_check))
             .route("/get_message", web::get().to(get_message))
     })
