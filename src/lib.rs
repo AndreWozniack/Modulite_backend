@@ -3,17 +3,37 @@ use actix_web::dev::Server;
 use std::net::TcpListener;
 use serde::Serialize;
 
-async fn health_check() -> HttpResponse {
-    HttpResponse::Ok()
-        .content_type("text/plain")
-        .body("Health check passed!")
-}
-
 #[derive(Serialize)]
 struct MessageResponse {
     message: String,
 }
 
+#[derive(Serialize)]
+struct HealthCheckResponse {
+    status: String,
+    database: bool,
+}
+
+async fn health_check() -> impl Responder {
+    // Simulação de uma verificação de banco de dados
+    let db_healthy = check_database_connection().await;
+
+    let overall_status = if db_healthy {
+        "Healthy".to_string()
+    } else {
+        "Unhealthy".to_string()
+    };
+
+    HttpResponse::Ok().json(HealthCheckResponse {
+        status: overall_status,
+        database: db_healthy,
+    })
+}
+
+async fn check_database_connection() -> bool {
+    // TODO: Logica para verificar se o banco esta saudável
+    true
+}
 async fn get_message() -> impl Responder {
     HttpResponse::Ok().json(MessageResponse {
         message: "Bem vindo ao servidor do Modu.lite em Rust!".to_string()
