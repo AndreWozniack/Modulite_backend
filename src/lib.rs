@@ -15,19 +15,7 @@ struct HealthCheckResponse {
 }
 
 async fn health_check() -> impl Responder {
-    // Simulação de uma verificação de banco de dados
-    let db_healthy = check_database_connection().await;
-
-    let overall_status = if db_healthy {
-        "Healthy".to_string()
-    } else {
-        "Unhealthy".to_string()
-    };
-
-    HttpResponse::Ok().json(HealthCheckResponse {
-        status: overall_status,
-        database: db_healthy,
-    })
+    HttpResponse::Ok().finish()
 }
 
 async fn check_database_connection() -> bool {
@@ -44,7 +32,7 @@ pub fn run(listener: TcpListener) -> Result<Server, std::io::Error> {
     let server = HttpServer::new(|| {
         App::new()
             .route("/", web::get().to(get_message))
-            .route("/health_check", web::get().to(health_check))
+            .route("/health", web::get().to(health_check))
             .route("/get_message", web::get().to(get_message))
     })
     .listen(listener)?
