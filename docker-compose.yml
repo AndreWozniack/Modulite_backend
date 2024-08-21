@@ -13,26 +13,9 @@ services:
       context: .
       target: final
     image: modulite-server:latest
-    container_name: modulite-server
+    container_name: modulite
     ports:
       - 8080:8080
-    depends_on:
-      - modulite-db
-
-  modulite-db:
-    container_name: modulite-db
-    image: postgres:16.4
-    environment:
-        POSTGRES_USER: postgres
-        POSTGRES_PASSWORD: postgres
-        POSTGRES_DB: postgres
-    ports:
-      - 5432:5432
-    volumes:
-      - modulite_pgdata:/var/lib/postgresql/data
-
-volumes:
-  modulite_pgdata: {}
 
 
 
