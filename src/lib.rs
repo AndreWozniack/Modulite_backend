@@ -5,7 +5,7 @@ use serde::Serialize;
 use std::net::TcpListener;
 use std::sync::Arc;
 
-mod repository;
+pub mod repository;
 
 #[derive(Serialize)]
 struct MessageResponse {
@@ -48,7 +48,6 @@ pub fn run(listener: TcpListener, repository: Arc<Repository>) -> Result<Server,
             .route("/health", web::get().to(health_check))
             .route("/get_message", web::get().to(get_message))
             .route("/test", web::get().to(test_get_message))
-
     })
     .listen(listener)?
     .run();

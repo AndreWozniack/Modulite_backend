@@ -1,13 +1,11 @@
 use modulite::repository::Repository;
 
-use actix_web::dev::Server;
+// use actix_web::dev::Server;
 use dotenv::dotenv;
 use modulite::run;
 use std::env;
 use std::net::TcpListener;
 use std::sync::Arc;
-
-mod repository;
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
