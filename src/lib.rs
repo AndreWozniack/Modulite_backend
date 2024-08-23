@@ -1,6 +1,6 @@
 use crate::repository::Repository;
 use actix_web::dev::Server;
-use actix_web::{web, App, HttpResponse, HttpServer, Responder, middleware};
+use actix_web::{middleware, web, App, HttpResponse, HttpServer, Responder};
 use serde::{Deserialize, Serialize};
 use std::net::TcpListener;
 use std::sync::Arc;

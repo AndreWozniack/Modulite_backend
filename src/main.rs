@@ -1,5 +1,4 @@
 use modulite::repository::Repository;
-
 use dotenv::dotenv;
 use modulite::run;
 use std::env;
@@ -9,6 +8,7 @@ use std::sync::Arc;
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
     dotenv().ok();
+
     let db_url = env::var("DATABASE_URL").expect("DATABASE_URL must be set and valid");
     println!("DATABASE_URL: {}", db_url);
 
@@ -17,8 +17,10 @@ async fn main() -> std::io::Result<()> {
         .expect("Failed to create repository: verify DATABASE_URL and SSL settings");
     let repository = Arc::new(repository);
 
-    let listener = TcpListener::bind("127.0.0.1:8000")?;
-    println!("Server is running on http://127.0.0.1:8000");
+    let port = env::var("PORT").unwrap_or_else(|_| "8000".to_string());
+    let address = format!("0.0.0.0:{}", port);
+    let listener = TcpListener::bind(&address)?;
+    println!("Server is running on http://{}", address);
 
     run(listener, repository)?.await
 }

@@ -1,5 +1,5 @@
-use sqlx::{PgPool, Error, postgres::PgPoolOptions};
 use bcrypt::{hash, DEFAULT_COST};
+use sqlx::{postgres::PgPoolOptions, Error, PgPool};
 
 #[derive(Clone)]
 pub struct Repository {
@@ -17,9 +17,11 @@ impl Repository {
             Ok(pool) => {
                 println!("Database connection established successfully.");
 
-                Self::create_user_table(&pool).await.expect("Failed to create user table");
+                Self::create_user_table(&pool)
+                    .await
+                    .expect("Failed to create user table");
                 Ok(Repository { pool })
-            },
+            }
             Err(e) => {
                 eprintln!("Failed to connect to database: {:?}", e);
                 Err(e)
@@ -31,7 +33,7 @@ impl Repository {
             Ok(_) => {
                 println!("Database connection is healthy.");
                 true
-            },
+            }
             Err(e) => {
                 eprintln!("Database connection check failed: {:?}", e);
                 false
@@ -44,7 +46,12 @@ impl Repository {
         Ok(hashed_password)
     }
 
-    pub async fn create_user(&self, username: &str, email: &str, password_hash: &str) -> Result<(), Error> {
+    pub async fn create_user(
+        &self,
+        username: &str,
+        email: &str,
+        password_hash: &str,
+    ) -> Result<(), Error> {
         let query = r#"
             INSERT INTO users (username, email, password_hash)
             VALUES ($1, $2, $3);
