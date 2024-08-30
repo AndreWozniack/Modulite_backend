@@ -37,11 +37,12 @@ async fn get_message_works() {
     );
 }
 
-
 async fn spawn_app() -> (String, Arc<Repository>) {
     let listener = TcpListener::bind("127.0.0.1:0").expect("Failed to bind random port");
     let port = listener.local_addr().unwrap().port();
-    let repository = Repository::new("postgresql://postgres:admin123@localhost/modulite").await.expect("Failed to connect to DB");
+    let repository = Repository::new("postgresql://postgres:admin123@localhost/modulite")
+        .await
+        .expect("Failed to connect to DB");
     let server =
         modulite::run(listener, Arc::new(repository.clone())).expect("Failed to bind address");
     let _ = tokio::spawn(server);
