@@ -21,6 +21,8 @@ env_logger = "0.11.5"
 bcrypt = "0.15.1"
 openssl = "0.10.66"
 openssl-sys = "0.9.103"
+actix-service = "2.0.2"
+
 
 
 [dev-dependencies]

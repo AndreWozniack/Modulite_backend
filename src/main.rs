@@ -1,9 +1,11 @@
-use modulite::repository::Repository;
 use dotenv::dotenv;
+use modulite::repository::Repository;
 use modulite::run;
 use std::env;
 use std::net::TcpListener;
 use std::sync::Arc;
+
+
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
@@ -21,6 +23,5 @@ async fn main() -> std::io::Result<()> {
     let address = format!("0.0.0.0:{}", port);
     let listener = TcpListener::bind(&address)?;
     println!("Server is running on http://{}", address);
-
     run(listener, repository)?.await
 }
