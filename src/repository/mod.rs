@@ -4,7 +4,7 @@ use sqlx::{postgres::PgPoolOptions, Error, FromRow, PgPool};
 
 #[derive(Clone)]
 pub struct Repository {
-    pool: PgPool,
+    pub pool: PgPool,
 }
 
 #[derive(Debug, Serialize, Deserialize, FromRow)]
@@ -16,7 +16,27 @@ pub struct User {
 }
 
 impl Repository {
+    pub(crate) async fn get_user_by_username(&self, username: &str) -> Result<User, Error> {
+        let user = sqlx::query_as::<_, User>("SELECT * FROM users WHERE username = $1")
+            .bind(username)
+            .fetch_one(&self.pool)
+            .await?;
+        Ok(user)
+    }
 
+    pub(crate) async fn get_user_by_email(&self, email: &str) -> Result<User, Error> {
+        let user = sqlx::query_as::<_, User>("SELECT * FROM users WHERE email = $1")
+            .bind(email)
+            .fetch_one(&self.pool)
+            .await?;
+        Ok(user)
+    }
+    pub(crate) async fn verify_password(&self, password: &str, password_hash: &str) -> bool {
+        match bcrypt::verify(password, password_hash) {
+            Ok(_) => true,
+            Err(_) => false,
+        }
+    }
     /// Create a new instance of the repository.
     pub async fn new(database_url: &str) -> Result<Self, Error> {
         let pool = PgPoolOptions::new()
@@ -39,7 +59,7 @@ impl Repository {
             }
         }
     }
-    pub async fn check_database_connection(&self) -> bool {
+    pub(crate) async fn check_database_connection(&self) -> bool {
         match sqlx::query("SELECT 1").fetch_one(&self.pool).await {
             Ok(_) => {
                 println!("Database connection is healthy.");
@@ -51,11 +71,13 @@ impl Repository {
             }
         }
     }
-    pub async fn hash_password(&self, password: &str) -> Result<String, Error> {
+
+    pub(crate) async fn hash_password(&self, password: &str) -> Result<String, Error> {
         let hashed_password = hash(password, DEFAULT_COST).unwrap();
         Ok(hashed_password)
     }
-    pub async fn create_user_table(pool: &PgPool) -> Result<(), sqlx::Error> {
+
+    async fn create_user_table(pool: &PgPool) -> Result<(), sqlx::Error> {
         let query = r#"
             CREATE TABLE IF NOT EXISTS users (
                 id SERIAL PRIMARY KEY,
@@ -65,13 +87,11 @@ impl Repository {
             );
         "#;
         sqlx::query(query).execute(pool).await?;
-        println!("User table created successfully.");
         Ok(())
     }
 
-
     /// Get all users from the database.
-    pub async fn get_users(&self) -> Result<Vec<User>, Error> {
+    pub(crate) async fn get_users(&self) -> Result<Vec<User>, Error> {
         let users = sqlx::query_as::<_, User>("SELECT * FROM users")
             .fetch_all(&self.pool)
             .await?;
@@ -79,7 +99,7 @@ impl Repository {
     }
 
     /// Get a user by ID from the database.
-    pub async fn get_user_by_id(&self, user_id: i32) -> Result<User, Error> {
+    pub(crate) async fn get_user_by_id(&self, user_id: i32) -> Result<User, Error> {
         let user = sqlx::query_as::<_, User>("SELECT * FROM users WHERE id = $1")
             .bind(user_id)
             .fetch_one(&self.pool)
@@ -88,7 +108,7 @@ impl Repository {
     }
 
     /// Create a new user in the database.
-    pub async fn create_user(
+    pub(crate) async fn create_user(
         &self,
         username: &str,
         email: &str,
@@ -106,11 +126,10 @@ impl Repository {
             .await?;
         print!("User created successfully.");
         Ok(())
-
     }
 
     /// Update a user in the database.
-    pub async fn update_user(
+    pub(crate) async fn update_user(
         &self,
         user_id: i32,
         username: Option<&str>,
@@ -148,7 +167,7 @@ impl Repository {
     }
 
     /// Delete a user from the database.
-    pub async fn delete_user(&self, user_id: i32) -> Result<(), Error> {
+    pub(crate) async fn delete_user(&self, user_id: i32) -> Result<(), Error> {
         let query = "DELETE FROM users WHERE id = $1";
         sqlx::query(query).bind(user_id).execute(&self.pool).await?;
         Ok(())
