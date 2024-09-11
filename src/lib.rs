@@ -59,7 +59,11 @@ fn user_routes(cfg: &mut web::ServiceConfig) {
 }
 
 fn auth_routes(cfg: &mut web::ServiceConfig) {
-    cfg.service(web::scope("/auth").route("/login", web::post().to(auth::login)));
+    cfg.service(
+        web::scope("/auth")
+            .route("/login", web::post().to(auth::login))
+            .route("/apple", web::post().to(auth::apple_login)),
+    );
 }
 
 pub fn run(listener: TcpListener, repository: Arc<Repository>) -> Result<Server, std::io::Error> {
@@ -68,17 +72,14 @@ pub fn run(listener: TcpListener, repository: Arc<Repository>) -> Result<Server,
         App::new()
             .wrap(Logger::default())
             .app_data(web::Data::new(repository.clone()))
-            // Rotas de autenticação
+            // Auth routes
             .configure(auth_routes)
-            // Rotas de teste
+            // Health check routes
             .route("/", web::get().to(get_message))
             .route("/health", web::get().to(health_check))
             .route("/test_db", web::get().to(test_db_connection))
-            // Rotas de usuários
+            // User routes
             .configure(user_routes)
-
-        // TODO: adicionar rotas para salvar e obter preferências do usuário
-        // TODO: adicionar rotas para salvar e obter widgets
     })
     .listen(listener)?
     .run();
